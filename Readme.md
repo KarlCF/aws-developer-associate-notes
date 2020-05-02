@@ -685,3 +685,40 @@ ___
 * If Pipeline can't perform an action, make sure the "IAM Service Role" attached does have enough permissions (IAM Policy)
 
 ### CodeBuild Overview
+
+* Fully managed build service
+* Alternative to other build tools such as Jenkins
+* Continuous scaling (no servers to manage or provision - no build queue)
+* Pay for usage: the time it takes to complete the builds
+* Leverages Docker under the hood for reproducible builds
+* Possibility to extend capabilities leveraging our own Docker images
+* Secure: Integration with KMS for encryption of build artifacts, IAM for build permissions, VPC for network security, and CloudTrail for API calls logging
+* Source Code from GitHub / CodeCommit / CodePipeline / S3 ...
+* Build instructions can be defined in code (buildspec.yml file)
+* Output logs to Amazon S3 & CloudWatch Logs
+* Metrics to monitor CodeBuild statistics
+* Use CloudWatch Alarms to detect failed builds and trigger notifications (SNS included)
+* CloudWatch Events / AWS Lambda as a Glue
+* Ability to reproduce CodeBuild locally to troubleshoot in case of errors
+* Builds can be defined within CodePipeline or CodeBuild itself
+* **CodeBuild supports a lot of environments natively, but in case your environment is not supported, you can generate a docker image and run any environment you like**
+
+### CodeBuild BuildSpec
+
+* buildspec.yml file must be at the **root** of your code
+* Define environment variables:
+  * Plaintext variables
+  * Secure secrets: use SSM Parameter store
+* Phases (specify commands to run):
+  * Install: install dependencies you may need for your build
+  * Pre build: final commands to execute before build
+  * **Build: actual build commands**
+  * Post build: finishing touches (zip output for example)
+* Artifacts: What to upload to S3 (encrypted with KMS)
+* Cache: Files to cache (usually dependencies) to S3 for future build speedup
+
+### CodeBuild Local Build
+
+* In case of need of deep troubleshooting beyond logs you can run CodeBuild locally on your desktop
+  * Needs to have Docker and CodeBuild Agent installed
+
