@@ -389,7 +389,7 @@ ___
   * ***In the exam and in the past:*** It is reccomended to have random prefix in front of your key name to optimize perfomrance (never rerccomended to use date prefixes, as the pertitions would be very similar)
 * After July 17th 2018 (Current state, but not in exam)
   * We can scale up to 3500 RPS for PUT and 5500 RPS for GET for EACH PREFIX
-  * For reference: https://aws.amazon.com/about-aws/whats-new/2018/07/amazon-s3-announces-increased-request-rate-performance/
+  * For reference: <https://aws.amazon.com/about-aws/whats-new/2018/07/amazon-s3-announces-increased-request-rate-performance/>
   * As stated in the news: 'This S3 request rate performance increase removes any previous guidance to randomize object prefixes to achieve faster performance.'
 * Faster upload of large objects (>=100mb), use multipart upload:
   * Parallelizes PUTs for greater throughput
@@ -412,7 +412,7 @@ ___
 * Files can be compressed with GZIP or BZIP2
 * No subqueries or Joins are supported
 
-___ 
+___
 
 ## Developing in the AWS: AWS CLI, SDK, IAM Roles & Policies
 
@@ -424,8 +424,8 @@ ___
   * sts **decode-authorization-message**
 * EC2 Instance Metadata:
   * Allows EC2 instances to "learn about themselves" without using an IAM Role for that purpose
-  * The URL is http://169.254.169.254/latest/meta-data (ex: `curl http://169.254.169.254/latest/meta-data`)
-    *  You can retrieve IAM Role name from the metadata, but you ***cannot*** retrieve the IAM Policy
+  * The URL is <http://169.254.169.254/latest/meta-data> (ex: `curl http://169.254.169.254/latest/meta-data`)
+    * You can retrieve IAM Role name from the metadata, but you ***cannot*** retrieve the IAM Policy
   * Metadata = info about the EC2 Instance
   * Userdata = launch script of the EC2 Instance
 * AWS Profile
@@ -575,7 +575,7 @@ ___
     * Based on space (when you have too many versions)
   * Versions that are currently used won't be deleted
   * Even if the version is deleted, you have the option not to delete the source bundle in S3 to prevent data loss
-* Web Server vs Worker Environment 
+* Web Server vs Worker Environment
   * If your application tasks that are long to complete, offload these tasks to a dedicated worker environment
   * Decoupling your application into two tiers in common
     * Example: processing a video, generating a zip file, etc
