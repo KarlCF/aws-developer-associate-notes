@@ -1,5 +1,16 @@
 # AWS Developer Exam Notes
 
+These are my notes while studying for the AWS Certified Developer Exam, I used the Stephane Mareek udemy course:
+ <https://www.udemy.com/course/aws-certified-developer-associate-dva-c01/>
+
+The objective of writing along with the course and making it public is to help others learn and follow through the same content.
+
+To do:
+
+1. Review notes after finishing the course
+2. Add links to segments and AWS Faqs links to each Service
+3. Add notes after taking the practice exam and certification exam
+
 ## AWS Fundamentals Part 1: IAM + EC2
 
 ## **EC2**
@@ -722,3 +733,65 @@ ___
 * In case of need of deep troubleshooting beyond logs you can run CodeBuild locally on your desktop
   * Needs to have Docker and CodeBuild Agent installed
 
+### CodeDeploy Overview
+
+* AWS CodeDeploy is a service that automates code deployments to any instance, including Amazon EC2 instances and instances running on-premises
+* Each EC2 Machine (or on-prem) must be running the CodeDeploy Agent
+* The agent is continuously polling AWS CodeDeploy for work to do
+* CodeDeploy sends appspec.yml file (must be at the root of the source code)
+* Application is pulled from GitHub or S3
+* CodeDeploy Agent will report of success / failure of deployment on the instance
+* EC2 instances are grouped by deployment group (dev / test / prod)
+* Lots of flexibility to define any kind of deployments
+* CodeDeploy can be chained into CodePipeline and use artifacts from there
+* CodeDeploy can re-use existing setup tools, works with any application, auto scaling integration
+* Blue / Green deployments only works with EC2 instances (not on premises)
+* Support for AWS Lambda deployments
+* CodeDeploy does not provision resources
+
+## AWS CodeDeploy Primary Components
+
+* **Application**: unique name
+* **Compute platform:** EC2/On-Premise or Lambda
+* **Deployment configuration:** Deployment rules for success / failures
+  * EC2/On-Premise: you can specify the minimum number of healthy instances for the deployment. 
+  * AWS Lambda: specify how traffic is routed to your updated Lambda functions versions.
+* **Deloyment group:** group of tagged instances (allows to deploy gradually)
+* **Deployment type:** In-place deployment or Blue/green deployment
+* **IAM instance profile:** need to give EC2 the permissions to pull from S3 / Github
+* **Application revision:** application code + appspec.yml file
+* **Service role:** Role for CodeDeploy to perform what it needs
+* **Target Revision:** Target deployment application version
+
+## AWS CodeDeploy AppSec
+
+* File section: how to source and copy from S3 / GitHub to filesystem
+* Hooks: set of instructions to do to deploy the new version (hooks can have timeouts). The order is:
+  * ApplicationStop
+  * DownloadBundle
+  * BeforeInstall
+  * AfterInstall
+  * ApplicationStart
+  * **ValidateService: really important**
+
+## AWS CodeDeploy Deployment Config
+
+* Configs:
+  * One at a time: one instance at a time, one instance fails => deployment stops
+  * Half at a time: 50%
+  * All at once: quick but no healthy host, downtime. Good for dev environments
+  * Custom: min healthy host = 75%
+* Failures:
+  * Instances stay in "failed state"
+  * New deployments will first be deployed to "failed state" instances
+  * To Rollback: redeploy old deployment or enable automated rollback for failures
+* Deployment Targets:
+  * Set of EC2 instances with tags
+  * Directly to an ASG
+  * Mix of ASG / Tags so you can build deployment segments
+  * Customization in scripts with DEPLOYMENT_GROUP_NAME environment variables
+
+## CodeStar Overview
+
+* CodeStar is an integrated solution that regroups: GitHub, CodeCommit, CodeBuild, CodeDeploy, CloudFormation, CodePipeline, CloudWatch
+* 
