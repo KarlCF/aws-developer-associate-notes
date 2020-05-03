@@ -809,7 +809,7 @@ ___
 * CloudFormation is a declarative way of outlining your AWS Infrastructure, for any resources (most are supported)
 * CloudFormation creates declared resources, in the **right order**, with the exact configuration you specify
 
-### Benefits of AWS CloudFOrmation
+### Benefits of AWS CloudFormation
 
 * Infrastructure as Code
   * No resources are manually created, which is great for control
@@ -832,7 +832,7 @@ ___
   * Leverage existing templates on the web
   * Leverage the documentation
 
-### How CLoudFormation Works
+### How CloudFormation Works
 
 * Templates have to be uploaded in S3 then referenced in CloudFormation
 * To update a template, we can't edit previous ones. We have to re-upload a new version of the template to AWS
@@ -862,3 +862,4 @@ ___
   * References
   * Functions
 
+### 
