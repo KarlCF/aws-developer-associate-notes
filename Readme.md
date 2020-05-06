@@ -1134,13 +1134,38 @@ ___
 * **X-Ray on EC2 / on Premises**:
   * Linux system must run the X-Ray daemon
   * IAM instance role if EC2, other AWS credentials on on-premise instance
-* X-Ray on Lambda:
+* **X-Ray on Lambda**:
   * Make sure X-Ray integration is checked on Lambda
-* X-Ray on Beanstalk:
+* **X-Ray on Beanstalk**:
   * Set configuration on EB console
   * Or use a beanstalk extension (.ebsextensions/xray-daemon.config)
-* X-Ray on ECS / EKS / Fargate (Docker)
+* **X-Ray on ECS / EKS / Fargate (Docker)**:
   * Create a Docker image that runs the Daemon / or use the official X-Ray Docker image
   * Ensure port mappings & network settings are correct and IAM task roles are defined
 
 ### AWS CloudTrail
+
+* Provides cgovernance, compliance and audit for your AWS Account
+* CloudTrail is enabled by default
+* Get an histopy of events / API calls made within your AWS Account by
+  * Console
+  * SDK
+  * CLI
+  * AWS Services
+* Can put logs from CloudTrail into CloudWatch Logs
+* If a resource is deleted in AWS, check CloudTrail
+
+### CloudTrail vs CloudWatch vs X-Ray
+
+* CloudTrail
+  * Audit API calls made by users / services / AWS console
+  * Useful to detect unauthorized calls or root cause of changes
+* CloudWatch:
+  * CloudWatch Metrics over time for monitoring
+  * CloudWatch Logs for storing application log
+  * CloudWatch Alarms to send notifications in case of unexpected metrics
+* X-Ray:
+  * Automated Trace Analysis & Central Service Map Visualization
+  * Latency, Errors and Fault analysis
+  * Request tracking accross distributed systems
+
