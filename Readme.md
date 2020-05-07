@@ -1169,3 +1169,68 @@ ___
   * Latency, Errors and Fault analysis
   * Request tracking accross distributed systems
 
+___
+## **AWS Integration & Messaging: SQS, SNS & Kinesis**
+
+### Section introduction
+
+* When we start deploying multiple applications, they will inevitably need to communicate with one another
+* There are two patterns of application communicaton
+  * Synchronous commucation (application to application)
+    * Can be problematic if there are sudden spikes of traffic
+  * Asynchronous / Event based (application to queue to application)
+    * Better to handle sudden spikes:
+      * Using SQS: Queue model
+      * Using SNS: pub/sub model
+      * using Kinesis: real-time streaming model
+
+### AWS SQS (Simple Queue Service)
+
+* AWS SQS - Standard Queue
+  * Oldest offering (over 10 y.o.)
+  * Fully managed
+  * Scales from 1 message per second to 10000s per second
+  * Default retention of messages: 4 days, maximum of 14 days
+  * No limit to how many messages can be in the queue
+  * Low latency (<10ms on publish and receive)
+  * Horizontal scaling in terms of number of consumers
+  * Can have duplicate messages (at least once delivery, occasionally)
+  * Can have out of order messages (best effort ordering)
+  * Limitation of 256KB per message sent
+* AWS SQS - Delay Queue
+  * Delay a message (consumers don't see it immediately) up to 15 minutes
+  * Default is 0 seconds (message available right away)
+  * Can set a default at queue level
+  * Can override the default using the DelaySeconds parameter
+* SQS - Producing Messages
+  * Define body (string, up to 256 KB)
+  * Add message attributes (metadata - optional)
+  * Provide Delay Delivery (optional)
+  * After the message is sent, you receive:
+    * Message identifier
+    * MD5 hash of the body
+* SQS - Consuming messages
+* Consumers:
+  * Poll SQS for messages (receive up to 10 messages at a time)
+  * Process the message within the visibility timeout
+  * Delete the message using the message ID & receipt handle
+* SQS - Visibility timeout
+  * When a consumer polls a message from a queue, the message is "invisibile" to other consumers for a defined period, the **Visibility Timeout**
+    * Between 0 seconds and 12 hours (default is 30s)
+    * If too high (15 minutes) and consumer fails to process the message, you must wait a long time before processing the message again
+    * If too low (30s) and consumer needs to process the message (2m), another consumer will receive the message and it will be processed more than once
+  * **ChangeMessageVisibility** API to change the visibility while processing a message
+  * **DeleteMessage** API to tell SQS the message was successfully processed
+* AWS SQS - Dead Letter Queue
+  * If a consumer fails to process a message within the Visibility Timeout, the message goes back to the queue
+  * We can set a threshold of how many times a message can go back to the queue - it's called a "redrive policy"
+  * After the message threshold is exceeded, the message goes into a dead letter queue (DLQ)
+  * We have to create a DLQ first and then designate it dead letter queue
+  * Make sure to process the messages in the DLQ before they expire
+* AWS SQS - Long Polling
+  * When a consumer requests message from the queue, it can optionally "wait" for messages to arrive if there are none in the queue - this is called Long Polling
+  * **LongPolling decreasese the number of API calls made to SQS while increasing the efficiency and latency of your application**
+  * The wait time can be between 1s to 20s (20s preferable)
+  * Long Polling is preferable to Short Polling
+  * Long polling can be enabled at the queue level or at the API level using **WaitTimeSeconds**
+
