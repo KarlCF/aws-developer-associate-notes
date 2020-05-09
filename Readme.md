@@ -1360,3 +1360,8 @@ ___
         * Increase shards (scaling)
         * Ensure your partition key is a good one
   * **AWS Kinesis API - Consumers**
+    * Can use a normal consumer (CLI, SDK, etc...)
+    * Can use Kinesis Client Library (in Java, Node, Python, Ruby, .Net)
+      * KCL uses DynamoDB to checkpoint offsets
+      * KCL uses DynamoDB to track other workers and share the work amongst shards
+      * 
