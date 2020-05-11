@@ -1364,4 +1364,43 @@ ___
     * Can use Kinesis Client Library (in Java, Node, Python, Ruby, .Net)
       * KCL uses DynamoDB to checkpoint offsets
       * KCL uses DynamoDB to track other workers and share the work amongst shards
-      * 
+
+### Kinesis KCL
+
+* Kinesis Client Library (KCL) is a Java library that helps read record for a Kinesis Streams with distributed applications sharing the read workload
+* **Rule: each shard is to be read by only one KCL instance (but a KCL instance can read more than one Shard)**
+* Means 4 shards =  max 4 KCL instances
+* Progress is checkpointed into DynamoDB
+* KCL can run on EC2, Elastic Beanstalk, on Premise Application
+* **Records are read in order at the shard level**
+
+### Kinesis Security
+
+* Control access / authorization using IAM policies
+* Encryption in flight using HTTPS endpoints
+* Possibility to encrypt / decrypt data client side (harder)
+* VPC Endpoints available for Kinesis to access within VPC
+
+### AWS Kinesis Data Analytics
+
+* Perform real-time analytics on Kinesis Streams using SQL
+* Kinesis Data Analytics:
+  * Auto Scaling
+  * Managed: no servers to provision
+  * Continuous: real time
+* Pay for actual consumption rate
+* Can create streams out of the real-time queries
+
+### AWS Kinesis Firehose
+
+* Fully Managed Service, no administration
+* Near Real Time (60s latency)
+* Load data into Redshift / Amazon S3 / ElasticSearch / Splunk 
+* Automatic scaling
+* Support many data format (pay for conversion)
+* Pay for the amount of data going through Firehose)
+
+___
+
+## **AWS Serverless: Lambda**
+
