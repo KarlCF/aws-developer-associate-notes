@@ -1404,3 +1404,56 @@ ___
 
 ## **AWS Serverless: Lambda**
 
+### Lambda Overview
+
+* Virtual **functions** - no servers to manage
+* Limited by time - **short executions**
+* Run **on-demand**
+* **Scalingis automated**
+* Benefits of lambda:
+  * Easy pricing, pay per request and compute time
+  * Integrated with the whole AWS suite of services
+  * Integrated with many programming languages
+  * Easy monitoring through AWS CloudWatch
+  * Easy to get more resources per functions (up to 3GB of RAM)
+  * Increasing RAM will also improve CPU and Network
+* Main Lambda integrations:
+  * API Gateway
+  * Kinesis
+  * DynamoDB
+  * S3
+  * CloudFront
+  * CloudWatch Events EventBridge
+  * CloudWatch Logs
+  * SNS
+  * SQS
+  * Cognito
+
+### Lambda - Synchronous Invocations
+
+* Synchronous: CLI, SDK, API Gateway, Application Load Balancer
+  * Results are returned right away
+  * Error handling must happen client side (retries, exponential backoff, etc...)
+* Synchronous Invocations - Services 
+  * User Invoked:
+    * Amazon API Gateway
+    * Amazon CloudFront (Lambda@Edge)
+    * Elastic Load Balancing
+    * Amazon S3 Batch
+  * Service Invoked:
+    * Amazon Cognito
+    * AWS Step Functions
+  * Other Services
+    * Amazon Lex
+    * Amazon Alexa
+    * Amazon Kinesis Data Firehose
+
+### Lambda Integration with ALB
+
+* To expose a Lambda function as an HTTP(S) endpoint you can use the ALB or API Gateway
+* The Lambda function must be registered in a **target group**
+* ALB Multi-Header Values
+  * ALB can support multi header values (ALB setting)
+  * When you enable multi-value headers, HTTP headers and query string parameters that are sent with multiple values are shown as arrays within the AWS Lambda event and response objects. 
+
+### 
