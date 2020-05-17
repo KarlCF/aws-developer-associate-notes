@@ -1491,4 +1491,5 @@ ___
 * Make sure the processing is idempotent (in case of retries, same results)
 * If the function is retried, you will see **duplicate logs entries in CloudWatch Logs**
 * Can define a DLQ - SNS or SQS -  for failed processing
-* Asynchronous invocations allow you to speed up the processing if you don't need to wait for the result
+* Asynchronous invocations allow you to speed up the processing if you don't need to wait for the result (ex: if you need 1000 files processed)
+* 
