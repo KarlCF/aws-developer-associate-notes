@@ -1492,4 +1492,19 @@ ___
 * If the function is retried, you will see **duplicate logs entries in CloudWatch Logs**
 * Can define a DLQ - SNS or SQS -  for failed processing
 * Asynchronous invocations allow you to speed up the processing if you don't need to wait for the result (ex: if you need 1000 files processed)
+* Lambda Asynchronous Invocations - Services
+  * Amazon S3
+  * Amazon SNS
+  * Amazon CloudWatch Events / EventBride
+  * AWS CodeCommit (CodeCommit Trigger: new branch, new tag, new push)
+  * AWS CodePipeline (invoke Lambda during the pipeline, Lambda must callback)
+  * Amazon CloudWatch Logs (log processing)
+  * Amazon Simple Email Service (SES)
+  * AWS CloudFormation
+  * AWS Config
+  * AWS IoT
+  * AWS IoT Events
+
+### Lambda & CloudWatch Events / EventBridge
+
 * 
