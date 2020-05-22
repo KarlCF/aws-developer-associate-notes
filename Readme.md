@@ -13,10 +13,9 @@ To do:
 
 ## AWS Fundamentals Part 1: IAM + EC2
 
-## **EC2**
+### **EC2**
 
-### **SSH into linux: chmod 0400 ec2keypair.pem**
-
+* **To SSH into linux: chmod 0400 ec2keypair.pem**
 * ssh -i ec2keypair.pem ec2-user@255.255.255.255
 * It's good to maintain one separate security group for SSH access (best practice)
 * Limit of 5 Elastic IP's per account (if you need to increase, just contact AWS)
@@ -27,17 +26,36 @@ To do:
 * Bootstrapping = EC2 User Data (only runs once at the first start)
 * EC2 User Data is automaticaly run with the sudo command
 
+### Elastic Network Interfaces (ENI)
+
+* Logical component in a VPC that represents a virtual network card
+* The ENI can have the following attributes:
+  * Primary private (IPv4), one or more secondary IPv4
+  * One Elastic IP (Ipv4) per private IPv4
+  * One Public IPv4
+  * One or more security groups
+  * A MAC address
+* You can create ENI independently and attach them on the fly (move them) on EC2 instances for failover
+* Bound to a specific AZ 
+
 ## **AWS Fundamentals Part 2: ELB + ASG + EBS**
 
 ## Load balancers
 
 * Application Load Balancer (v2)
+  * Works on Layer 7 (HTTP)
   * Load balancing multiple HTTP application accros machines (target groups)
   * Load balancing to multiple applications on the same machine (ex: containers)
+  * Support for HTTP/2 and WebSocket
+  * Support redirects (from HTTP to HTTPS for example)
   * Load balancing based on route in URL
   * Load balancing based on hostname URL
   * Has a port mapping feature to redirect to a dynamic port
   * Great for micro services & container-based application (ex: Docker & Amazon ECS)
+  * Routing tables to different target groups:
+    * Routing based on path in URL (example.com/users & example.com/posts)
+    * Routing based on hostname in URL (one.example.com & other.example.com)
+  * 
 
   * ### **Good to know:**
 
@@ -50,11 +68,68 @@ To do:
     * We can also get Port (X-Forwarded-Port) and proto (X-Forwarded-Proto)
 
 * Network Load Balancer (v2)
-  * Forward TCP traffict to your instances
+  * Forward TCP & UDP (Layer 4) traffict to your instances
   * Handle millions of requests per seconds
+  * NLB has **one static IP per AZ**, and supports assigning Elastic IP (helpful for whitelisting specific IPs)
   * Support for static IP or elastic IP
   * Less latency: ~ 100 ms (vs 400 ms for ALB)
   * Mostly used for extreme performance, should not be the default load balancer you chose
+
+### Load Balancer Stickiness
+
+* It is possible to implement stickiness so that same client is always redirected to the same instance behind a load balance (Works for CLB & ALB)
+* The "cookie" used for stickiness has an expiration date you control
+* Use case: make sure the user doesn't lose his session data
+* Enabling stickiness may bring imbalance to the load over the backend EC2 instances
+
+### Cross-Zone Load Balancing
+
+* With Cross Zone Load Balancing each load balancer instance distributes evenly across all registered instances in all AZ
+* Otherwise, each load balancer node distributes requests evently across the registered instances in its Availability Zone only
+* Classic Load Balancer
+  * Disabled by default
+  * No charges for inter AZ data if enabled
+* Application Load Balancer
+  * Always on (can't be disabled)
+  * No charges for inter AZ data
+* Network Load Balancer
+  * Disabled by default
+  * Charges are generated for inter AZ data if enabled
+
+### SSL/TLS - Basics
+
+* An SSL Certificate allows traffic between your clients and your load balancer to be encrypted in transit (in-flight encryption)
+* SSL refers to Secure Sockets Layer, used to encrypt connections
+* TLS refers to Transport Layer Security, which is the newer version
+* TLS certificates are mainly used, but it is still referred as SSL
+* Public SSL certificates are issued by Certificate Autorities (CA)
+  * Comodo, Symantec, GoDaddy, GlobalSign, Letsencrypt, etc...
+* SSL certificates have an expiration date (you set) and must be renewed
+* The load balancer uses an X.509 certificate (SSL/TLS server certificate)
+* You can manage certificates using ACM (AWS certificate Manager)
+* You can upload your own certificates alternatively
+* HTTPS listener:
+  * You can specify a default certificate
+  * You can add an optional list of certs to support multiple domains
+  * Clients can use SNI (Server Name Indication) to specify the hostname they reach
+  * Ability to specify a security policy to support older versions of SSL/TLS (legacy clients)
+* SSL - SNI(Server Name Indication)
+  * SNI solves the problem of loading multiple SSL certificates onto one web server (to serve multiple websites)
+  * It's a "newer" protocol, and requires the client to indicate the hostname of the target server in the initial SSL handshake
+  * The server will then find the correct certificate, or return the default one
+  * Only works for NLB & ALB and CloudFront
+
+### ELB - Connection Draining
+
+* Feature naming:
+  * CLB: Connection Draining
+  * Target Group: Deregistration Delay (ALB & NLB)
+* Time to complete "in-flight requests" while the instance is de-registering or unhealthy
+* Stops sending new requests to the instance which is de-registering
+* Can be set between 1 to 3600 seconds, default is 300.
+* Can be disabled (set value to 0)
+* Set a low value if your requests are short
+
 
 ### **Good to know:**
 
@@ -94,7 +169,10 @@ To do:
 * Network + Subnets Information
 * Load Balancer Information (Or target group info)
 * Scaling Policies
+### Auto Scaling Groups - Scaling Policies
 
+* **Target Tracking Scaling**
+  * 
 ### Auto Scaling new Rules
 
 * It is now possible to define more refined auto scale rules that are directly managed by EC2
