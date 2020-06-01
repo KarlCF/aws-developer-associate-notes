@@ -172,7 +172,13 @@ To do:
 ### Auto Scaling Groups - Scaling Policies
 
 * **Target Tracking Scaling**
-  * 
+  * Most simple and easy to set-up
+  * EX: Configure the ASG CPU to stay at around 40%
+* **Simple / Step Scaling**
+  * When a CloudWatch alarm is triggered scale-in or scale-out
+* **Scheduled Actions**
+  * Anticipate a scaling based on known usage patterns
+
 ### Auto Scaling new Rules
 
 * It is now possible to define more refined auto scale rules that are directly managed by EC2
@@ -209,6 +215,9 @@ ___
   * Size (any volume type)
   * IOPS (only IO1)
   * After resizing an EBS volume, you need to repartition your driver on the EC2 instance
+* Only GP2 and IO1 can be used as boot volumes
+* On GP2, you get 3 IOPS per GB. The minimum of IOPS is 100 and the maximum is 16k.
+* On IO1, you can get a ratio of up to 50:1 IOPS:GB. The max for normal instances is 32K, on nitro instances it is 64k.
 
 * ### EBS Encryption
 
@@ -232,6 +241,33 @@ ___
     * Resizing a volume down
     * Changing the volume type
     * Encrypt a volume
+
+### EFS - Elastic File System
+
+* Managed NFS (Network File System) that can be mounted on multiple EC2.
+* EFS is multi-AZ
+* Highly available and scalable. The usage cost is: 3 x (gp2's cost).
+* Only pay for the use, not the available storage.
+* Uses SG to control access to EFS
+* Use cases:
+  * Content management
+  * Web Serving
+  * Data Sharing
+  * Wordpress
+* Uses NFSv4.1 protocol
+* **Compatible only with Linux based AMI**
+* Encryption at rest using KMS
+* POSIX file system (Linux) that has a standard file API
+* File system scales automatically, pay-per-use, no capacity planning required
+* **EFS Scale**
+  * Thousands of concurrent NFS clients, 10GB/s + throughput
+  * Grow to Petabyte-scale NFS, automatically
+* **Performance mode (nset at a EFS creation time)**
+  * General purpose (default): latency-sensitive use cases (web server, CMS, etc...)
+  * Max I/O - higher latency, throughput, highly parallel (big data, media processing)
+* **Storage Tiers (lifecycle management feature)**
+  * Standard: for frequently accessed files
+  * Infrequent access (EFS-IA): cost to retrieve files, lower price to store
 
 ## **AWS Fundamentals Part 3: Route 53 + ElastiCache + VPC**
 
