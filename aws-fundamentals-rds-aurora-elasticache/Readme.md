@@ -1,3 +1,6 @@
+## **AWS Fundamentals: RDS + Aurora + ElastiCache**
+
+--- 
 
 ## RDS
 
@@ -39,14 +42,58 @@
   * IAM policies help control who can manage AWS RDS
   * Traditional Username and Password can be used to login to the database
   * IAM users can now be used too (MySQL / Aurora - New feature)
-* RDS vs Aurora
-  * Aurora is proprietary technology from AWS (not open sourced)
-  * Postgres and MySQL are both supported as Aurora DB (your drivers will work as if Aurora was a Postgres or MySQL database)
-  * Aurora is "AWS cloud optimized" and claims 5x performance improvement over MySql on RDS and 3x over Postgres on RDS
-  * Aurora's storage automatically grows of increments of 10GB, up to 64 TB
-  * Can have 15 replicas, while MySQL has 5, and the replication is faster (below 10 ms replica lag)
-  * Failover in Aurora is instantaneous. It's High Available natively
-  * Costs more than RDS (about 20%), but more efficient
+
+---
+
+## Aurora
+
+* Aurora is proprietary technology from AWS (not open sourced)
+* Postgres and MySQL are both supported as Aurora DB (your drivers will work as if Aurora was a Postgres or MySQL database)
+* Aurora is "AWS cloud optimized" and claims 5x performance improvement over MySql on RDS and 3x over Postgres on RDS
+* Aurora's storage automatically grows of increments of 10GB, up to 64 TB
+* Can have 15 replicas, while MySQL has 5, and the replication is faster (below 10 ms replica lag)
+* Failover in Aurora is instantaneous. It's High Available natively
+* Costs more than RDS (about 20%), but more efficient
+* **Aurora High Availability**
+  * 6 copies of your data accross 3 AZ:
+    * 4 copies out of 6 needed for writes
+    * 3 copies out of 6 needed for reads
+    * Self Healing with peer-to-peer replication
+    * Storage is striped across hundreds of volumes
+  * One Aurora instance takes writes (Master)
+  * Automated failover for master in less than 30 seconds
+  * Master + up to 15 Aurora Read Replicas serve reads
+  * Support for Cross Region Replication
+* **Aurora DB Cluster**
+  * Writer Endpoint: points to the master automatically (even if changes on failover) 
+  * Reader Endpoint: Connection load balancing for read.
+* **Features of Aurora**
+  * Automatic fail-over
+  * Backup and Recover
+  * Isolation and security
+  * Industry compliance
+  * Push-button scaling
+  * Automated Patching with Zero Downtime
+  * Advanced Monitoring
+  * Routine Maintenance
+  * Backtrack: restore data at any point of time without using backups
+* **Aurora Security**
+  * **See RDS Security listed above**
+* **Aurora Serverless**
+  * Automated database instantiation and auto-scaling based on actual usage
+  * Good for: intermittent, infrequent or unpredictable workload
+  * No capacity planning needed
+  * **Pay per second**: can be more cost-effective
+* **Global Aurora**
+  * Aurora Cross Region Read Replicas:
+    * Useful for disaster recovery
+    * Simple to put in place
+  * Aurora Global Database (recommended):
+    * 1 Primary Region (read / write)
+    * Up to 5 secondary (read-only) regions, replication lag is less than 1 second
+    * Up to 16 Read Replicas per secondary region
+    * Help for decreasing latency
+    * Promoting another region (**DR**) has an RTO of < 1 minute
 
 ---
 

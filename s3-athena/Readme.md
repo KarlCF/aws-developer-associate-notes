@@ -1,4 +1,4 @@
-## **AWS Fundamentals Part 4: S3**
+## **AWS Fundamentals: S3**
 
 * Buckets are defined at the region level
 * Must have globally unique names
