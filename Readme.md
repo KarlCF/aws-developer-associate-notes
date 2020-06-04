@@ -10,4 +10,3 @@ To do:
 1. Review notes after finishing the course
 2. Add links to segments and AWS Faqs links to each Service
 3. Add notes after taking the practice exam and certification exam
-
