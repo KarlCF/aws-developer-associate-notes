@@ -54,20 +54,36 @@
 
 ### Routing Policy - Latency
 
-* 
+* Redirect to the server that has the least latency close to us
+* Very helpful when latency of users is a priority
+* Latency is evaluated in terms of user to designated AWS Region
+* Germany may be directed to the US (if that's the lowest latency)
 
 ### Route53 Health Checks
 
-* 
+* Have X health checks failed => unhealthy (default 3)
+* Have X health checks passed => passed (default 3)
+* Default Health Check Iterval: 30s (can be set to 10s - higher cost)
+* About 15 checkers will check the endpoint health (one request every 2 seconds on average)
+* Can have HTTP, TCP and HTTPS health checks (no SSL verification)
+* Possibility of integrating the health check with CloudWatch
+* Health checks can be linked to Route53 DNS queries
 
 ### Routing Policy - Failover
 
-* 
+* If the primary DNS fails, Route53 returns a secondary DNS
+* Health Checks are mandatory on the primary DNS
 
 ### Routing Policy - Geolocation
 
-* 
+* This is routing based on user location
+* Here we specify: traffic from the UK should go to this specific IP
+* Should create a "default" policy, in case there is no condition set for the user location
 
 ### Routing Policy - Multi Value
 
-* 
+*  Use when:
+   *  Routing traffic to multiple resources
+   *  Want to associate Route53 health checks with records
+*  Up to 8 healthy records are returned for each Multi Value query
+*  **Multi Value is not a substitute for an ELB** 
