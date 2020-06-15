@@ -88,7 +88,7 @@
 * If the function is retried, you will see **duplicate logs entries in CloudWatch Logs**
 * Can define a DLQ - SNS or SQS -  for failed processing
 * Asynchronous invocations allow you to speed up the processing if you don't need to wait for the result (ex: if you need 1000 files processed)
-* Lambda Asynchronous Invocations - Services
+* Lambda Asyn chronous Invocations - Services
   * Amazon S3
   * Amazon SNS
   * Amazon CloudWatch Events / EventBride

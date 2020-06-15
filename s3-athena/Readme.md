@@ -131,3 +131,56 @@
 * Works with files in CSV, JSON or Parquet format
 * Files can be compressed with GZIP or BZIP2
 * No subqueries or Joins are supported
+
+### S3 MFA-Delete
+
+* Forces the use of MFA before doing important operations on S3:
+  * Permanently delete an object version
+  * suspend versioning on the bucket
+* Actions that don't need MFA:
+  * enabling versioning
+  * listing deleted versions
+* To use MFA-Delete, it is required to enable Versioning on the S3 bucket
+* **Only the bucket owner (root) can enable/disable MFA-Delete**
+* MFA-Delete can only be enabled using the CLI (currently)
+
+### S3 Access Logs
+
+* For audit purpose, you may want to log all access to S3 buckets
+* Any request made to S3, from any account, authorized or denied, will be logged into another S3 bucket
+* That data can be analyzed using data analysis tools, or Amazon Athena
+* Check log format at: https://docs.aws.amazon.com/AmazonS3/latest/dev/LogFormat.html
+* The bucket that receives the logs and the one that is monitored should always be different, otherwise it will create a logging loop, which will grow in size exponentially
+
+### S3 Replication (CRR & SRR)
+
+* Must enable versioing in source and destination
+* Cross Region Replication (CRR)
+  * Compliance, lower latency access, replication accross accounts
+* Same Region Replication (SRR)
+  * Log aggregation, live replication between production and test accounts
+* Buckets can be in different accounts
+* Copying is asynchronous
+* Must give proper IAM permissions to S3
+* After activating, only new objects are replicated (not retroactive)
+* For DELETE operations:
+  * If you delete without a version ID, it adds a delete marker, not replicated
+  * If you delete with a version ID, it delets in the source, not replicated
+* There is no "chaining" of replication
+  * If bucket 1 has replication into bucket 2, which has replication into bucket 3, objects from bucket 1 are not replicated to bucket 3.
+
+### S3 Pre-Signed URLs
+
+* Can generate pre-signed URL's using SDK or CLI
+  * For downloads, use the CLI
+  * For uploads, use the SDK
+* Valid for a default of 3600 seconds, can change timeout with --expires-in [TIME-BY-SECONDS] argument
+* Users given a pre-signed URL inherit the permissions of the person who generated the URL for GET / PUT
+* Examples:
+  * Allow only logged-in users to download a premium video from the S3 bucket
+  * Allow an ever changing list of users to download files by generating URLs dynamically
+  * Allow temporarily a user to upload a file to a specific location in your bucket
+
+#### Tips:
+* aws configure set default.s3.signature_version s3v4
+* aws s3 presign [OBJECT-PATH] --expires-in X --region X
