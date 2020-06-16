@@ -184,3 +184,32 @@
 #### Tips:
 * aws configure set default.s3.signature_version s3v4
 * aws s3 presign [OBJECT-PATH] --expires-in X --region X
+
+### S3 Lifecycle Rules
+
+* Transition actions: it defines when objects are transitioned to another storage class
+  * Move objects to Standard IA class 60 days after creation
+  * Move to Glacier for archiving after 6 months
+* Expiration actions: configure objects to expire (delete) after some time
+  * Access log files can be set to delete after 365 days
+  * Can be used to delete old versions of files (versioning enabled only)
+  * Can be used to delete incomplete multi-part uploads
+* Rules can be created for a certain prefix (ex- s3://mybucket/mp3/*)
+* Rules can be created for certain objects tags (ex - Department: Finance)
+
+### S3 Event Notifications
+
+* Can create rules based on actions on S3 Bucket (S3:ObjectCreated, S3:ObjectRemoved, S3:ObjectRestor, etc...)
+* Object name filtering possible (ex: *.jps)
+* Multiple S3 events can be created
+* S3 event notification typically occurs within seconds of the operation, but can take one minute or more
+* If two writes or more are made on the same non-versioned object, it is possible that only one event notification will be triggered. To make sure that all notifications are accurate, enable versioning. 
+
+### AWS Athena
+
+* Serverless service to perform analytics directly against S3 files
+* Uses SQL language to query the files
+* Has a JDBC / ODBC driver
+* Charged per query and amount of data scanned
+* Supports CSV, JSON, ORC, Avro, and Parquet (built on Presto)
+* Use cases: B.I., analytics, reporting, analyze & query VPC Flow Logs, ELB Logs, CloudTrail trails, etc...
