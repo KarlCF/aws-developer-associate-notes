@@ -66,17 +66,6 @@
 * Route53 can be setup using weighted policies to redirect a little bit of traffict to the stage environment
 * Using Beanstalk, "swap URLs" when done with the environment test
 
-### Elastic Beanstalk Extensions
-
-* A zip file containing your code must be deployed to Elastic Beanstalk
-* All the parameters set in the UI can be configured with code using files
-  * Requirements:
-    * In the .ebextensions/ directory in the root of the source code
-    * YAML / JSON format
-    * .config extensions (example: logging.config)
-    * Able to modify some default settings using: option_settings
-    * Ability to add resources such as RDS, ElastiCache, DynamoDB, etc...
-
 ### Elastic Beanstalk CLI
 
 * We can install an additional CLI called the "EB cli" which makes working with Beanstalk from the CLI easier
@@ -92,50 +81,125 @@
   * eb terminate
 * Very helpful when automating deployment pipelines
 
-### Elastic Beanstalk under the hood
-
-* Elastic Beanstalk relies on CloudFormation
-
 ### Elastic Beanstalk Deployment Mechanism
 
 * Describe dependencies (requirements.txt for Python, package.json for Node.js)
 * Package code as zip
+  * **Console**: upload zip file (creates new app version), and then deploy
+  * **CLI**: create a new version using CLI (uploads zip), and then deploy
 * Zip file is uploaded to each EC2 machine
 * Each EC2 machine resolves dependencies (slow if there are a lot of dependencies or if they are big)
 * Optimization in case of long deployments: Package dependencies with source code to improve deployment performance and speed
 
-### Elastic Beanstalk Exam Tips
+### Beanstalk Lifecycle Policy
 
-* Beanstalk can work with HTTPS
-  * Idea: Load the SSL onto the Load Balancer
-  * Can be done from the Console ( EB console, load balancer configuration)
-  * Can be done from the code: .ebextensions/securelistener-alb.config
-  * SSL Certificate can be provisioned using ACM (AWS Certificate Manager) or CLI
-  * Must configure security group to allow incoming port 443 (HTTPS port)
-* Beanstalk redirect HTTP to HTTPS
-  * Configure your instances to redirect HTTP to HTTPS
-  * Or configure Application Load Balancer (ALB only) with a rule
-  * Make sure health checks are not redirected (so they keep sending 200 OK)
-* Elastic Beanstalk Lifecycle Policy
-  * Elastic Beanstalk can store at most 1000 application versions
-  * If you don't remove old versions, you won't be able to deploy newer ones
-  * To phase out old application versions, use a lifecycle policy
-    * Based on time (old versions are removed)
-    * Based on space (when you have too many versions)
-  * Versions that are currently used won't be deleted
-  * Even if the version is deleted, you have the option not to delete the source bundle in S3 to prevent data loss
-* Web Server vs Worker Environment
-  * If your application tasks that are long to complete, offload these tasks to a dedicated worker environment
-  * Decoupling your application into two tiers in common
-    * Example: processing a video, generating a zip file, etc
-  * You can define periodic tasks in a file cron.yaml
-* RDS with Elastic Beanstalk
-  * Rds can be provisioned with Beanstalk, which is great for dev / test, but not justifiable for Prod as it can result in data loss
-  * The best for prod is to separately create an RDS database and provide our EB application with the connection string
-  * Steps to migrate from RDS coupled in EB to standalone RDS:
-    * Take an RDS DB Snapshot
-    * Enable deletion protection in RDS
-    * Create a new environment without an RDS, pointing to the existing old RDS
-    * Perform blue/green deployment and swap new and old environments
-    * Terminate the old environment (RDS won't be deleted, as the deletion protect is activated)
-    * Delete CloudFormation stack (will be in DELETE_FAILED state, as the RDS still remains)
+* Elastic Beanstalk can store at most 1000 applications versions (if older versions aren't deleted, it will be unable to deploy further)
+* To phase out application versions, use a **lifecycle policy**
+  * Based on time (old versions are removed)
+  * Based on space (when there are too many versions)
+* Versions that are currently used won't be deleted
+* Option not to delete the source bundle in S3 to prevent data loss
+
+
+### Elastic Beanstalk Extensions
+
+* A zip file containing your code must be deployed to Elastic Beanstalk
+* All the parameters set in the UI can be configured with code using files
+  * Requirements:
+    * In the .ebextensions/ directory in the root of the source code
+    * YAML / JSON format
+    * .config extensions (example: logging.config)
+    * Able to modify some default settings using: option_settings
+    * Ability to add resources such as RDS, ElastiCache, DynamoDB, etc...
+* **Resources managed by .ebextensions get deleted if the environment goes away**
+
+### Elastic Beanstalk under the hood
+
+* Elastic Beanstalk relies on CloudFormation
+* Use case: you can define CloudFormation resources in your .ebextensions to provision ElastiCache, S3 Buckets, etc...
+
+### Elastic Beanstalk Cloning
+
+* Clone an environment with the exact same configuration
+* Useful for deploying a "test" version of your application
+* All resources and configuration are preserved
+* After cloning an environment you can change it's settings
+
+### Elastic Beanstalk - Single Docker
+
+* Run your application as a single docker container
+* Either provide:
+  * Dockerfile: Elastic Beanstalk will build and run the Docker container
+  * Dockerrun.aws.json (v1): Describe where *already built* Docker imagine is
+    * Image, Ports, Volume, Logging, Etc...
+  * Beanstalk in Single Docker Container **does not use ECS**
+
+### Elastic Beanstalk - Multi Docker Container
+
+* Multi Docker helps run multiple containers per EC2 instance in EB
+* This will create:
+  * ECS Cluster
+  * Ec2 instances, configured to use ECS Cluster
+  * Load Balancer (in high availability mode)
+  * Task definitions and execution
+* Requires a config **Dockerrun.aws.json (v2)** at the root of source code
+* **Dockerrun.aws.json** is used to create the ECS Task definition
+
+### Elastic Beanstalk - Advanced Concepts
+
+#### Beanstalk can work with HTTPS
+
+* Idea: Load the SSL onto the Load Balancer
+* Can be done from the Console ( EB console, load balancer configuration)
+* Can be done from the code: .ebextensions/securelistener-alb.config
+* SSL Certificate can be provisioned using ACM (AWS Certificate Manager) or CLI
+* Must configure security group to allow incoming port 443 (HTTPS port)
+* 
+#### Beanstalk redirect HTTP to HTTPS
+
+* Configure your instances to redirect HTTP to HTTPS
+* Or configure Application Load Balancer (ALB only) with a rule
+* Make sure health checks are not redirected (so they keep sending 200 OK)
+  
+#### Elastic Beanstalk Lifecycle Policy
+
+* Elastic Beanstalk can store at most 1000 application versions
+* If you don't remove old versions, you won't be able to deploy newer ones
+* To phase out old application versions, use a lifecycle policy
+  * Based on time (old versions are removed)
+  * Based on space (when you have too many versions)
+* Versions that are currently used won't be deleted
+* Even if the version is deleted, you have the option not to delete the source bundle in S3 to prevent data loss
+  
+#### Web Server vs Worker Environment
+
+* If your application tasks that are long to complete, offload these tasks to a dedicated worker environment
+* Decoupling your application into two tiers in common
+  * Example: processing a video, generating a zip file, etc
+* You can define periodic tasks in a file cron.yaml
+
+#### Elastic Beanstalk - Custom Platform
+
+* Custom Platforms are very advanced, they allow to define from scratch:
+  * The OS
+  * Additional Software
+  * Scripts that Beanstalk runs on these platforms
+* **Use case**: app language is incompatible with Beanstalk & doesn't use Docker
+* To create your own platform:
+  * Define an AMI using **Platform.yaml** file
+  * Build that platform using Packer software (open source tool to create AMIs)
+* Custom Platform vs Custom Image (AMI)
+  * Custom image is to tweak an existing Beanstalk Platform (Python, Node.js, Java...)
+  * Custom Platform is to create an entirely new Beanstalk Platform
+  
+#### RDS with Elastic Beanstalk
+
+* Rds can be provisioned with Beanstalk, which is great for dev / test, but not justifiable for Prod as it can result in data loss
+* The best for prod is to separately create an RDS database and provide our EB application with the connection string
+* Steps to migrate from RDS coupled in EB to standalone RDS:
+  * Take an RDS DB Snapshot
+  * Enable deletion protection in RDS
+  * Create a new environment without an RDS, pointing to the existing old RDS
+  * Perform blue/green deployment and swap new and old environments
+  * Terminate the old environment (RDS won't be deleted, as the deletion protect is activated)
+  * Delete CloudFormation stack (will be in DELETE_FAILED state, as the RDS still remains)
