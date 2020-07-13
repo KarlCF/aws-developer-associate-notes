@@ -127,6 +127,12 @@
 * In case of need of deep troubleshooting beyond logs you can run CodeBuild locally on your desktop
   * Needs to have Docker and CodeBuild Agent installed
 
+### CodeBuild in VPC
+
+* By default, cCodeBuild containers are launched outside of a VPC. Therefore, it cannot access resources in a VPC
+* You can specify a VPC configuration (VPC ID, Subnet ID, Security Group ID), and then access VPC resources
+* Use cases: integration tests, data query, internal load balancers
+
 ### CodeDeploy Overview
 
 * AWS CodeDeploy is a service that automates code deployments to any instance, including Amazon EC2 instances and instances running on-premises
@@ -143,7 +149,7 @@
 * Support for AWS Lambda deployments
 * CodeDeploy does not provision resources
 
-## AWS CodeDeploy Primary Components
+### AWS CodeDeploy Primary Components
 
 * **Application**: unique name
 * **Compute platform:** EC2/On-Premise or Lambda
@@ -157,7 +163,7 @@
 * **Service role:** Role for CodeDeploy to perform what it needs
 * **Target Revision:** Target deployment application version
 
-## AWS CodeDeploy AppSec
+### AWS CodeDeploy AppSec
 
 * File section: how to source and copy from S3 / GitHub to filesystem
 * Hooks: set of instructions to do to deploy the new version (hooks can have timeouts). The order is:
@@ -168,7 +174,7 @@
   * ApplicationStart
   * **ValidateService: really important**
 
-## AWS CodeDeploy Deployment Config
+### AWS CodeDeploy Deployment Config
 
 * Configs:
   * One at a time: one instance at a time, one instance fails => deployment stops
@@ -186,7 +192,14 @@
   * Mix of ASG / Tags so you can build deployment segments
   * Customization in scripts with DEPLOYMENT_GROUP_NAME environment variables
 
-## CodeStar Overview
+### CodeDeploy - roll backs
+
+* You can specify automated rollback options
+* Roll back when a deployment fails
+* Roll back when alarm thresholds are met
+* Disable rollbacks - Donot perform rollbacks for this deployment
+
+### CodeStar Overview
 
 * CodeStar is an integrated solution that regroups: GitHub, CodeCommit, CodeBuild, CodeDeploy, CloudFormation, CodePipeline, CloudWatch
 * Helps quickly create "CICD-ready" projects for EC2, Lambda, Beanstalk

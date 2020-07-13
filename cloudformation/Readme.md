@@ -185,3 +185,28 @@
 * Stack Update Fails:
   * The stack automatically rolls back to the previous known working state
   * Ability to see in the log what happened and error messages
+
+### ChangeSets
+
+* When you update a stack, you need to know what changes before it happens for greater confidence
+* ChangeSets won't say if the update will be successful
+
+### Nested stacks
+
+* Nested stacks are part of other stacks
+* They allow you to isolate repeated patterns / common components in separate stacks and call them from other stacks
+* Example:
+  * Load Balancer configuration that is re-used
+  * Security Group that is re-used
+* Nested stacks are considered best practice
+* To update a nested stack, update the parent (root stack)
+
+#### Cross Stacks vs Nested Stacks
+
+* Cross Stacks
+  * Helpful when stacks have different lifecycles
+  * Use Outputs Exports and Fn::ImportValue
+  * When you need to pass export values to many stacks
+* Nested Stacks
+  * Helpful when components must be re-used
+  * The nested stack is only important to the higher level stack (not shared)

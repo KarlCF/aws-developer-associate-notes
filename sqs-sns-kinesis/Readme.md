@@ -227,3 +227,16 @@
 * Automatic scaling
 * Support many data format (pay for conversion)
 * Pay for the amount of data going through Firehose)
+
+### Data ordering for Kinesis vs SQS FIFO
+
+#### Ordering data into Kinesis
+
+* To consume data in order, send data using a "Partition Key" with the value with an Id of the operation (for operations that are recurrent), the same key will always go to the same shard
+
+#### Ordering data into SQS
+
+* For SQS standard, there is no ordering
+* For SQS FIFO, if you don't use a Group ID, messages are consumed in the order they are sent, **with only one consumer**
+* You want to scale the number of consumers, but you want messages to be "grouped" when they are related to each other
+* Then you use a Group ID (similar to Partition Keys in Kinesis)
