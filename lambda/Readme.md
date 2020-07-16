@@ -270,10 +270,99 @@
   * If synchronous invocation => return ThrottleError - 429
   * If asynchronous invocation => retry automatically and then go to DLQ
 * If you need a higher limit, open a support ticket
-* Concurrency limit applies to all lambdas in the account
+* **Concurrency limit applies to all lambdas in the account**
 
 #### Concurrency and Asynchronous Invocations
 
 * If the function doesn't have enough concurrency available to process all events, additional requests are throttled.
 * For throttling errors (429) and system errors (500-series), Lambda returns the event to the queue and attempts to run the function again for up to 6 hours
-* The retry interval increases exponentially from 1 second
+* The retry interval increases exponentially from 1 second to a maximum of 5 minutes
+
+#### Cold Start & Provisioned Concurrency
+
+* **Cold Start**:
+  * New instance => code is loaded and code outside the handler run (init)
+  * If the init is large (code, dependencies, SDK...) this process can take some time
+  * First request served by new instances has higher latency than the rest
+* **Provisioned Concurrency**
+  * Concurrency is allocated before the function is invoked (in advance)
+  * So the cold start never happens and all invocations have low latency
+  * Application Auto Scaling can manage concurrency (schedule or target utilization)
+
+#### > **Cold starts in VPC have been dramatically reduced in Oct ~ Nov 2019**
+
+### Lambda Function Dependencies
+
+* If a Lambda function depends on external libraries, it is necessary to **install the packages alongside the code and zip it together**
+  * Upload the zip straight to Lambda if less than 50mb, else to S3 first
+* Native libraries work: they need to be compiled on Amazon Linux
+* AWS SDK comes by default with every Lambda function
+
+### Lambda Layers
+
+* Allows for Custom Runtimes
+* Externalize Dependencies to re-use them
+
+### Lambda Versions and Aliases
+
+#### AWS Lambda Versions
+
+* When you work on a Lambda function, we work on $LATEST
+* When we're ready to publish a Lambda function, we create a version
+* Versions are immutable
+* Versions have increasing version numbers
+* Versions get their own ARN
+* Version = code + configuration (nothing can be changed - immutable)
+* Each version of the lambda function can be accessed
+
+#### AWS Lambda Aliases
+
+* Aliases are "pointers" to Lambda function versions
+* We can define a "dev", "test", "prod" aliases and have them point at different lambda versions
+* Aliases are mutable
+* Aliases enable Blue / Green deployment by assigning weights to lambda functions
+* Aliases enable stable configuration of our event triggers / destinations
+* Aliases have their own ARNs
+* Aliases cannot reference aliases
+
+### Lambda and CodeDeploy
+
+* CodeDeploy can help you automate traffic shift for Lambda aliases
+* Feature is integrated within the SAM framework
+* Linear: grow traffic every N minutes until 100%
+  * Linear10PercentEvery3Minutes
+  * Linear10PercentEvery10Minutes
+* **Canary**: try X percent then 100%
+  * Canary10Percent5Minutes
+  * Canary10Percent30Minutes
+* **AllAtOnce:** immediate
+* Can create Pre & Post Traffic hooks to check the health of the Lambda function
+
+### Lambda Limits - per region
+
+* Execution: 
+  * Memory allocation: 128 MB - 3008MB (64MB increments)
+  * Maximum execution time: 900 seconds (15min)
+  * Environment variables (4 KB)
+  * Disk capacity in the "function container" (/tmp): 512 MB
+  * Concurrency executions: 1000 (can be increased)
+* Deployment:
+  * Lambda Function deployment size (compressed .zip): 50 MB
+  * Size of uncompressed deployment (code + dependencies): 250 MB
+  * Can use the /tmp directory to load other files at startup
+  * Size of environment variables: 4 KB
+
+### Lambda Best Practices
+
+* **Perform heavy-duty work outside of your function handler**
+  * Connect to databases outside of your function handler
+  * Initialize the AWS SDK outside of your function handler
+  * Pull in dependencies or datasets outside of your function handler
+* **Use environment variables for**:
+  * Database Connection Strings, S3 bucket, etc... don't put these values in your code
+  * Password, sensitive values... they can be encrypted using KMS
+* **Minimize your deployment package size to its runtime necessities**
+  * Break down the function if needs be
+  * Remember the AWS Lambda limits
+  * Use layers where necessary
+* **Avoid using recursive code, never have a Lambda function call itself**
