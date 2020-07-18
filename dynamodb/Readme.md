@@ -345,3 +345,22 @@
   * Option 2: Create a backup and restore the backup into a new table name (can take some time)
   * Option 3: Scan + Write > write own code
 
+### DynamoDB Security
+
+* VPC Endpoints available to access DynamoDB without internet
+* Access fully controled by IAM
+* Encryption at rest using KMS
+* Encryption in transit using SSL / TLS
+
+### DynamoDB Backup and Restore feature
+
+* Point in time restore like RDS
+* No performance impact
+
+### DynamoDB Global Tables
+
+* Multi region, fully repplicated, high performance
+
+#### Amazon DMS can be used to migrate to DynamoDB (from Mongo, Oracle, MySql, S3, etc...) 
+
+#### You can launch a local DynamoDB on your computer for development purposes
