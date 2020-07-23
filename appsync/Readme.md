@@ -18,4 +18,3 @@
   * OPENID_CONNECT: OpenID Connect provider / JSON Web Token
   * AMAZON_COGNITO_USER_POOLS
 * For custom domain & HTTPS, use CloudFront in front of AppSync
-* 

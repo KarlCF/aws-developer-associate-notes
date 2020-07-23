@@ -97,3 +97,92 @@
 * **Storage Tiers (lifecycle management feature)**
   * Standard: for frequently accessed files
   * Infrequent access (EFS-IA): cost to retrieve files, lower price to store
+
+### IAM
+
+#### AWS STS - Security Token Service
+
+* Allows to grant limited and temporary access to AWS resources ( up to 1 hour)
+* **AssumeRole**: Assume roles within your account or cross account
+* **AssumeRoleWithSAML**: return credentials for users logged with SAML
+* **AssumeRoleWithWebIdentity**:
+  * return creds for users logged in with an IdP (Facebook Login, Google Login, OIDC compatible...)
+  * AWS recommends against using this, and using **Cognito Identity Pools** instead
+* **GetSessionToken**: for MFA, from a user or AWS account root user
+* **GetCallerIdentity**: return details about the IAM user or role used in the API call
+* **DecodeAuthorizationMessage**: decode error message when an AWS API is denied
+
+#### Using STS to Assume a Role
+
+* Define an IAM Role within your account or cross-account
+* Define which principals can access this IAM Role
+* Use AWS STS (Security Token Service) to retrieve credentials and impersonate the IAM Role you have access to (**AssumeRole API**)
+* Temporary credentials can be valid between 15 minutes to 1 hour
+
+ #### STS with MFA
+
+* Use **GetSessionToken** from STS
+* Appropriate IAM policy using IAM Conditions
+* **aws:MultiFactorAuthPresent:true**
+* GetSessionToken returns;
+  * Access ID
+  * Secret Key
+  * Session Token
+
+#### IAM - Authorization Model
+
+1. If there's an explicit DENY, end decision and Deny
+2. If there's an allow, end decision with Allow
+3. Else, Deny
+
+#### IAM Policies & S3 Policies
+
+* When evaluating if an IAM Principal can perform an operation X on a bucket, the **union** of its assigned IAM Policies and S3 Bucket Policies will be evaluated
+
+#### Dynamic Policies with IAM
+
+* How to assign each user a /home/<user> folder in an S3 bucket?
+  * Option 1:
+    * One IAM policy for each user
+  * Option 2:
+    * Dynamic policy with IAM
+      * ${aws:username}, (e.g: {"Action" ["s3:*"], "Effect":"Allow","Resource":["arn:aws:::my-company/home/${aws:username}/*"]})
+
+#### Inline vs Managed Policies
+
+* AWS Managed Policy
+  * Maintained by AWS
+  * Good for users and administrators
+  * Updated in case of new services / new APIs
+* Customer Managed Policy
+  * Best Practice, re-usable, can be applied to many principals
+  * Version Controlled + rollback, central change management
+* Inline
+  * Strict one-to-one relationship between policy and principal
+  * Policy is deleted if you delete the IAM principal
+
+#### Granting a User Permissions to Pass a Role to an AWS Service
+
+* To configure many AWS services, you must pass an IAM role to the service (this happens only once during setup), the service will then assume the role and perform actions
+* For this, IAM permission iam:PassRole is needed
+  * It often comes with iam:GetRole to view the role being passed
+  * A trust policy for the role allows the service to allow the role
+
+#### Directory Services
+
+* **Microsoft Active Directory**
+  * Found on any Windows Server with AD Domain Services
+  * Database of **objects**: User Accounts, Computers, Printers, File Shares, Security Groups
+  * Centralized security management, create account, assign permissions
+  * Objects are organized in **trees**
+  * A group of trees is a **forest**
+* **AWS Directory Services**
+  * **AWS Managed Microsoft AD**
+    * Create your own AD in AWS, manage users locally, supports MFA
+    * Enablish "trust" connections with your on-premise AD
+  * **AD Connector**
+    * Directory Gateway (proxy) to redirect to on-premise AD
+    * Users are managed on the on-premise AD
+  * **Simple AD**
+    * AD-compatible managed directory on AWS
+    * Cannot be joined with on-premise AD
