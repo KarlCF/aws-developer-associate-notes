@@ -91,3 +91,32 @@
 4. (in target account) Create copy of the Snapshot, encrypt it with a KMS Key in target account
 5. Create a volume from the Snapshot
 
+### Envelope Encryption
+
+* KMS Encrypt API call has a limit of 4 KB
+* Anything Over 4 KB of data that needs to be encrypted must use the Envelope Encryption == **GenerateDataKey API**
+  * Generates a plaintext Data Key (DEK), then the key is used to encrypt the bigger file.
+  * After the big file is encrypted, the encrypted Data Key is placed in an Envelope with the file (Envelope Encryption)
+  * To decrypt the file, call the Decrypt API to decrypt the Data Key, and only then, decrypt the big file with the unencrypted Data Key
+
+### Encryption SDK
+
+* The AWS Encryption SDK implemented Envelope Encryption for us
+* The Encryption SDK also exists as an CLI tool we can install
+* Implementations for Java, Python, C, JavaScript
+* **Feature - Data Key Caching**:
+  * Re-uses data keys instead of creating new ones for each encryption
+  * Helps with reducing the number of calls to KMS with a security trade-off
+  * Use LocalCryptoMaterialsCache (max age, max bytes, max number of messages)
+
+### KMS Symmetric - API Summary
+
+* **Encrypt**: encrypt up to 4 KB of data through KMS
+* **GenerateDataKey**: generates a unique symmetric data key (DEK)
+  * Returns a plaintext copy of the data key
+  * AND a copy that is encrypted under the CMK that you specify
+* **GenerateDataKeyWithoutPlainxText**:
+  * Generate a DEK to use at some point (not immediately)
+  * DEK that is encrypted under the CMK that you specify (must use Decrypt later)
+* **Decrypt**: decrypt up to 4 KB of data (including Data Encryption Keys)
+* **GenerateRandom**: Returns a random byte string 
