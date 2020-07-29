@@ -119,4 +119,23 @@
   * Generate a DEK to use at some point (not immediately)
   * DEK that is encrypted under the CMK that you specify (must use Decrypt later)
 * **Decrypt**: decrypt up to 4 KB of data (including Data Encryption Keys)
-* **GenerateRandom**: Returns a random byte string 
+* **GenerateRandom**: Returns a random byte string
+
+### KMS Limits
+
+#### KMS Request Quotas
+
+* When you exceed a request quota, you get a **ThrottlingException**
+* To respond, use **exponential backoff** (backoff and retry)
+* For cryptographic operations, they share a quota
+* This includes requests made by AWS on your behalf (ex: SSE-KMS)
+* For GenerateDataKey, coinsider using DEK caching from the encryption SDK
+* **You can request a Request Quotas increase through API or AWS support**
+* **Symmetric CMK quota**:
+  * 5.500 (shared)
+  * 10.000 (shared): us-east-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, eu-central-1, eu-west-2
+  * 30.000 (shared): us-east-1, us-west-2, us-west-1
+* **Asymmetric CMK quota**:
+  * 500 (shared) for RSA CMKs
+  * 300 (shared) for Elliptic curve (ECC) CMKs
+

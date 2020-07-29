@@ -91,6 +91,16 @@
   * Collect logs to send to CloudWatch Logs
   * Centralized configuration using SSM Parameter Store
 
+### CloudWatch Logs - Encryption
+
+* You can encrypt CloudWatch logs with KMS keys
+* Encryption is enabled at the log group level, by associating a CMK with a log group, either when you create the log group or after it exists.
+* You cannot associate a CMK with a log group using the CloudWatch console
+* You must use the CloudWatch Logs API
+  * **associate-kms-key**: if the log group already exists
+  * **create-log-group**: if the log group doesn't exist yet
+* 
+
 ### CloudWatch Logs Metric FIlter 
 
 * CloudWatch Logs can be used to filter expressions

@@ -205,6 +205,42 @@
 * S3 event notification typically occurs within seconds of the operation, but can take one minute or more
 * If two writes or more are made on the same non-versioned object, it is possible that only one event notification will be triggered. To make sure that all notifications are accurate, enable versioning. 
 
+### S3 Security
+
+* There are 4 methods of encrypting objects in S3
+
+  * SSE-SE: encrypts s3 objects using keys handled & managed by AWS
+  * SSE-KMS: AWS Key Management Service to manage encryption keys
+  * SSE-C: when you want to manage your own encryption keys
+  * Client Side Encryption
+
+#### SSE-KMS Deep Dive
+
+* Leverage AWS Key Management Service to manage encryption keys
+* Encryption using keys handled and managed by AWS
+* KMS Advantages: user contro + audit trail
+* Object is encrypted server side
+* Must set header: "x-amz-server-side-encryption": "aws:kms"
+* Leverages the **GenerateDataKey** & **Decrypt** KMS API calls
+* These KMS API calls will show up in CloudTrail, helpful for logging
+* To perform, SSE KMS you need:
+  * A AWS Key Policy that authorizes the user/role
+  * An IAM policy that authorizes access to KMS
+  * Otherwise you'll get an access denied error
+* S3 calls to SSE-KMS count against the KMS quotas limits:
+  * If throttling, try exponential backoff
+  * If throttling, you can request an increase in KMS limits
+  * The service throttling is KMS, not Amazon S3
+
+#### S3 Bucket Policies
+
+* **Force SSL**
+  * To force SSL, create an S3 bucket policy with a **DENY** on the condition: **aws:Secure Transport = false**
+  * Using an allow on aws:SecureTransport = true would allow anonymous GetObject if using SSL
+* **Force Encryption of SSE-KMS**
+  * Deny incorrect encryption header: make sure it includes aws:kms (== SSE-KMS)
+  * Deny no encryption header to ensure objects are not uploaded un-encrypted
+
 ### AWS Athena
 
 * Serverless service to perform analytics directly against S3 files

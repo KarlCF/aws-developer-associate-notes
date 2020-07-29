@@ -133,6 +133,13 @@
 * You can specify a VPC configuration (VPC ID, Subnet ID, Security Group ID), and then access VPC resources
 * Use cases: integration tests, data query, internal load balancers
 
+### CodeBuild Security
+
+* To access resources in your VPC, make sure you specify a VPC configuration for your CodeBuild
+* Secrets in CodeBuild:
+  * Environment variables can reference parameter store parameters
+  * Environment variables can reference secrets manager secrets
+
 ### CodeDeploy Overview
 
 * AWS CodeDeploy is a service that automates code deployments to any instance, including Amazon EC2 instances and instances running on-premises
