@@ -1,4 +1,4 @@
-## **AWS CI/CD: CodeCommit, CodePipeline, CodeBuild, CodeDeploy
+## **AWS CI/CD: CodeCommit, CodePipeline, CodeBuild, CodeDeploy**
 
 * AWS CodeCommit: Storing our code
 * AWS CodePipeline: automating our pipeline from code to ElasticBeanstalk (?)
